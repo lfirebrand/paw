@@ -1,15 +1,18 @@
 import React from "react";
 import { render } from "react-dom";
-import Pet from "./Pet";
+import { Router } from "@reach/router";
+import Results from "./Results";
+import Details from "./Details";
 
 class App extends React.Component {
   render() {
     return (
       <div>
-        <h1>Pawtner</h1>
-        <Pet name="Lilith" animal="Cat" breed="Bombay" />
-        <Pet name="Willy" animal="Cat" breed="Tabby" />
-        <Pet name="St. Augustine" animal="Dog" breed="Lab" />
+        <h1>Pawtner!</h1>
+        <Router>
+          <Results path="/" />
+          <Details path="/details/:id" />
+        </Router>
       </div>
     );
   }
