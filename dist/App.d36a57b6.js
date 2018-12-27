@@ -27296,6 +27296,8 @@ exports.default = void 0;
 
 var _react = _interopRequireDefault(require("react"));
 
+var _router = require("@reach/router");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
@@ -27335,7 +27337,8 @@ function (_React$Component) {
           animal = _this$props.animal,
           breed = _this$props.breed,
           media = _this$props.media,
-          location = _this$props.location;
+          location = _this$props.location,
+          id = _this$props.id;
       var photos = [];
 
       if (media && media.photos && media.photos.photo) {
@@ -27350,7 +27353,8 @@ function (_React$Component) {
         hero = photos[0].value;
       }
 
-      return _react.default.createElement("div", {
+      return _react.default.createElement(_router.Link, {
+        to: "/details/".concat(id),
         className: "pet"
       }, _react.default.createElement("div", {
         className: "image-container"
@@ -27368,7 +27372,7 @@ function (_React$Component) {
 
 var _default = Pet;
 exports.default = _default;
-},{"react":"../node_modules/react/index.js"}],"Results.js":[function(require,module,exports) {
+},{"react":"../node_modules/react/index.js","@reach/router":"../node_modules/@reach/router/es/index.js"}],"Results.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -27472,7 +27476,8 @@ function (_React$Component) {
           name: pet.name,
           breed: breed,
           media: pet.media,
-          location: "".concat(pet.contact.city, ", ").concat(pet.contact.state)
+          location: "".concat(pet.contact.city, ", ").concat(pet.contact.state),
+          id: pet.id
         });
       }));
     }
@@ -27492,6 +27497,10 @@ Object.defineProperty(exports, "__esModule", {
 exports.default = void 0;
 
 var _react = _interopRequireDefault(require("react"));
+
+var _petfinderClient = _interopRequireDefault(require("petfinder-client"));
+
+var _router = require("@reach/router");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -27513,21 +27522,81 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
+var petfinder = (0, _petfinderClient.default)({
+  key: "0ccd5ceb828e94225ecdff9abb20868c",
+  secret: "bf56e82455f839b84dba2f9de546e85a"
+});
+
 var Details =
 /*#__PURE__*/
 function (_React$Component) {
   _inherits(Details, _React$Component);
 
   function Details() {
+    var _getPrototypeOf2;
+
+    var _this;
+
+    var _temp;
+
     _classCallCheck(this, Details);
 
-    return _possibleConstructorReturn(this, _getPrototypeOf(Details).apply(this, arguments));
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    return _possibleConstructorReturn(_this, (_temp = _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(Details)).call.apply(_getPrototypeOf2, [this].concat(args))), _this.state = {
+      loading: true
+    }, _temp));
   }
 
   _createClass(Details, [{
+    key: "componentDidMount",
+    value: function componentDidMount() {
+      var _this2 = this;
+
+      petfinder.pet.get({
+        output: "full",
+        id: this.props.id
+      }).then(function (data) {
+        var pet = data.petfinder.pet;
+        var breed;
+
+        if (Array.isArray(pet.breeds.breed)) {
+          breed = pet.breeds.breed.join(", ");
+        } else {
+          breed = pet.breeds.breed;
+        }
+
+        _this2.setState({
+          name: pet.name,
+          animal: pet.animal,
+          location: "".concat(pet.contact.city, ", ").concat(pet.contact.state),
+          description: pet.description,
+          media: pet.media,
+          breed: breed,
+          loading: false
+        }).catch(function () {
+          (0, _router.navigate)("/");
+        });
+      });
+    }
+  }, {
     key: "render",
     value: function render() {
-      return _react.default.createElement("h1", null, "hi lol");
+      if (this.state.loading) {
+        return _react.default.createElement("h1", null, "Loading...");
+      }
+
+      var _this$state = this.state,
+          name = _this$state.name,
+          animal = _this$state.animal,
+          breed = _this$state.breed,
+          location = _this$state.location,
+          description = _this$state.description;
+      return _react.default.createElement("div", {
+        className: "details"
+      }, _react.default.createElement("div", null, _react.default.createElement("h1", null, name), _react.default.createElement("h2", null, animal, " | ", breed, " | ", location), _react.default.createElement("p", null, description)));
     }
   }]);
 
@@ -27536,7 +27605,7 @@ function (_React$Component) {
 
 var _default = Details;
 exports.default = _default;
-},{"react":"../node_modules/react/index.js"}],"App.js":[function(require,module,exports) {
+},{"react":"../node_modules/react/index.js","petfinder-client":"../node_modules/petfinder-client/index.js","@reach/router":"../node_modules/@reach/router/es/index.js"}],"App.js":[function(require,module,exports) {
 "use strict";
 
 var _react = _interopRequireDefault(require("react"));
@@ -27583,7 +27652,9 @@ function (_React$Component) {
   _createClass(App, [{
     key: "render",
     value: function render() {
-      return _react.default.createElement("div", null, _react.default.createElement("h1", null, "Pawtner!"), _react.default.createElement(_router.Router, null, _react.default.createElement(_Results.default, {
+      return _react.default.createElement("div", null, _react.default.createElement("header", null, _react.default.createElement(_router.Link, {
+        to: "/"
+      }, "Pawtner!")), _react.default.createElement(_router.Router, null, _react.default.createElement(_Results.default, {
         path: "/"
       }), _react.default.createElement(_Details.default, {
         path: "/details/:id"
@@ -27622,7 +27693,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "54291" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "65511" + '/');
 
   ws.onmessage = function (event) {
     var data = JSON.parse(event.data);
