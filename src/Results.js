@@ -17,25 +17,23 @@ class Results extends React.Component {
     };
   }
   componentDidMount() {
-    petfinder.pet
-      .find({ output: "full", location: "Lincoln, NE" })
-      .then(data => {
-        let pets;
+    petfinder.pet.find({ output: "full", location: "Omaha, NE" }).then(data => {
+      let pets;
 
-        if (data.petfinder.pets && data.petfinder.pets.pet) {
-          if (Array.isArray(data.petfinder.pets.pet)) {
-            pets = data.petfinder.pets.pet;
-          } else {
-            pets = [data.petfinder.pets.pet];
-          }
+      if (data.petfinder.pets && data.petfinder.pets.pet) {
+        if (Array.isArray(data.petfinder.pets.pet)) {
+          pets = data.petfinder.pets.pet;
         } else {
-          pets = [];
+          pets = [data.petfinder.pets.pet];
         }
+      } else {
+        pets = [];
+      }
 
-        this.setState({
-          pets
-        });
+      this.setState({
+        pets
       });
+    });
   }
   render() {
     return (
